@@ -44,7 +44,7 @@ public class EmployeeService {
 
         Employee savedEmployeeDO = employeeRepository.save(employeeDO);
 
-        System.out.println("Employee saved " + savedEmployeeDO);
+        System.out.println("Employee saved to " + savedEmployeeDO);
 
         String[] names = savedEmployeeDO.getName().split(" ");
         String firstName = names[0];
