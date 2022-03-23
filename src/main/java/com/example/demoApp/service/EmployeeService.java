@@ -33,38 +33,46 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public EmployeeDTO add(EmployeeDTO employee){
+    public EmployeeDTO add(EmployeeDTO employee) {
+
+        System.out.println("Adding an Employee " + employee);
+
         // some business logic here
         Employee employeeDO = new Employee();
         employeeDO.setDept(employee.getDept());
-        employeeDO.setName(employee.getFirstName()+" "+employee.getLastName());
+        employeeDO.setName(employee.getFirstName() + " " + employee.getLastName());
 
         Employee savedEmployeeDO = employeeRepository.save(employeeDO);
+
+        System.out.println("Employee saved " + savedEmployeeDO);
 
         String[] names = savedEmployeeDO.getName().split(" ");
         String firstName = names[0];
         String lastName = names[1];
+        EmployeeDTO empDTO = new EmployeeDTO(firstName, lastName, savedEmployeeDO.getDept());
 
-        return new EmployeeDTO(firstName, lastName, savedEmployeeDO.getDept());
+        System.out.println("Employee added " + empDTO);
+
+        return empDTO;
     }
 
     public EmployeeDTO search(EmployeeSearchCriteria searchCriteria) {
         //dept is mandatory
-        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ") ;
+        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ");
         List<Object> parameters = new ArrayList<>();
-        if(isNotBlank(searchCriteria.getDept()) ){
-            sql.append( "and dept = ? ");
+        if (isNotBlank(searchCriteria.getDept())) {
+            sql.append("and dept = ? ");
             parameters.add(searchCriteria.getDept());
         }
-        if(isNotBlank(searchCriteria.getName()) ){
-            sql.append( "and name = ? ");
+        if (isNotBlank(searchCriteria.getName())) {
+            sql.append("and name = ? ");
             parameters.add(searchCriteria.getName());
         }
-        if(searchCriteria.getId() != null ){
-            sql.append( "and id = ?");
+        if (searchCriteria.getId() != null) {
+            sql.append("and id = ?");
             parameters.add(searchCriteria.getId());
         }
-        System.out.println("SQL generated for search employee : "+sql.toString());
+        System.out.println("SQL generated for search employee : " + sql.toString());
 
         try {
             return jdbcTemplate.queryForObject(sql.toString(), new EmployeeRowMapper(),
@@ -79,20 +87,20 @@ public class EmployeeService {
     public EmployeeDTO find(EmployeeSearchCriteria searchCriteria) {
         //dept is mandatory
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ") ;
-        if(isNotBlank(searchCriteria.getDept()) ){
-            sql.append( "and dept = :dept ");
+        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ");
+        if (isNotBlank(searchCriteria.getDept())) {
+            sql.append("and dept = :dept ");
             parameters.addValue("dept", searchCriteria.getDept());
         }
-        if(isNotBlank(searchCriteria.getName()) ){
-            sql.append( "and name = :name ");
+        if (isNotBlank(searchCriteria.getName())) {
+            sql.append("and name = :name ");
             parameters.addValue("name", searchCriteria.getName());
         }
-        if(searchCriteria.getId() != null ){
-            sql.append( "and id = :id");
+        if (searchCriteria.getId() != null) {
+            sql.append("and id = :id");
             parameters.addValue("id", searchCriteria.getId());
         }
-        System.out.println("SQL generated for search employee : "+sql.toString());
+        System.out.println("SQL generated for search employee : " + sql.toString());
 
         try {
             return namedParameterJdbcTemplate.queryForObject(sql.toString(), parameters, new EmployeeRowMapper());
@@ -108,17 +116,17 @@ public class EmployeeService {
     public EmployeeDTO findUsingBean(EmployeeSearchCriteria searchCriteria) {
         //dept is mandatory
         BeanPropertySqlParameterSource parameters = new BeanPropertySqlParameterSource(searchCriteria);
-        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ") ;
-        if(isNotBlank(searchCriteria.getDept()) ){
-            sql.append( "and dept = :dept ");
+        StringBuffer sql = new StringBuffer("select id, name, dept from employee where 1=1 ");
+        if (isNotBlank(searchCriteria.getDept())) {
+            sql.append("and dept = :dept ");
         }
-        if(isNotBlank(searchCriteria.getName()) ){
-            sql.append( "and name = :name ");
+        if (isNotBlank(searchCriteria.getName())) {
+            sql.append("and name = :name ");
         }
-        if(searchCriteria.getId() != null ){
-            sql.append( "and id = :id");
+        if (searchCriteria.getId() != null) {
+            sql.append("and id = :id");
         }
-        System.out.println("SQL generated for search employee : "+sql.toString());
+        System.out.println("SQL generated for search employee : " + sql.toString());
 
         try {
             return namedParameterJdbcTemplate.queryForObject(sql.toString(), parameters, new EmployeeRowMapper());
@@ -132,7 +140,7 @@ public class EmployeeService {
     }
 }
 
-class EmployeeRowMapper implements RowMapper<EmployeeDTO>{
+class EmployeeRowMapper implements RowMapper<EmployeeDTO> {
     @Override
     public EmployeeDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         EmployeeDTO employeeDTO = new EmployeeDTO();
